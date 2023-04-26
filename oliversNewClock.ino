@@ -172,7 +172,7 @@ for(int z = 0; z < 15; z++){
   // Send HTTP request
   client.print(F("GET "));
   // This is the second half of a request (everything that comes after the base URL)
-  client.print("/api/v3?today&extremes&lat=21.3477&lon=-105.2459&localtime&datum=CD&key=8688cbf2-4b2a-4e50-9bb5-9a146976dd69"); // %2C == ,
+  client.print("/api/v3?today&extremes&lat=21.3477&lon=-105.2459&localtime&datum=CD&key="); // %2C == ,
   client.println(F(" HTTP/1.1"));
 
   //Headers
