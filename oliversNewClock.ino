@@ -19,7 +19,7 @@
 static const int servoPin = 17; // Where you attached your servo pin
 // IO pin assignments
 //hours off UTC this represents Hawaii--
-int timeStamp = -10;
+int timeStamp = -7;
 
 int mover = 0;
 double epic;
@@ -39,7 +39,7 @@ char ssid[] = myWifi;       // your network SSID (name)
 char password[] = myPassword;  // your network key
 // NTP server to request epoch time
 const char* ntpServer = "pool.ntp.org";
-double timerTrue = 60000;
+double timerTrue = 600000;
 // Variable to save current epoch time
 unsigned long epochTime; 
 long timerNow;
@@ -97,9 +97,12 @@ const char *server_cert = "-----BEGIN CERTIFICATE-----\n"
 void setup() {
 
   Serial.begin(115200);
-  servo1.attach(servoPin);
+  
   // put your setup code here, to run once:
   pinMode(32,OUTPUT);
+  pinMode(33,OUTPUT);
+  digitalWrite(32,LOW);
+  digitalWrite(33,LOW);
   servo1.attach(servoPin);
   timerNow = millis();
   tft.init();
@@ -169,7 +172,7 @@ for(int z = 0; z < 15; z++){
   // Send HTTP request
   client.print(F("GET "));
   // This is the second half of a request (everything that comes after the base URL)
-  client.print("/api/v3?today&extremes&lat=20.783&lon=-156.467&localtime&datum=CD&key="); // %2C == ,
+  client.print("/api/v3?today&extremes&lat=21.3477&lon=-105.2459&localtime&datum=CD&key=8688cbf2-4b2a-4e50-9bb5-9a146976dd69"); // %2C == ,
   client.println(F(" HTTP/1.1"));
 
   //Headers
@@ -281,7 +284,6 @@ Serial.println();
 
 
 void loop() {
-  digitalWrite(32,HIGH);
   tft.drawNumber(que, 180, 30, 7);
   //check epic time every 60 minutes
   if(done == 1 && epochHiLow[0] != 0) {
@@ -345,6 +347,7 @@ void showTime(tm localTime) {
   else Serial.println(localTime.tm_wday);
 }
 void moving( int drug){
+  servo1.attach(servoPin);
   if(que !=0){
             epic = ( epochTime - epochHiLow[que - 1] );
             epic2 = (epochHiLow[que] - epochHiLow[que - 1]);
@@ -361,16 +364,20 @@ void moving( int drug){
          if(hiLow[que] == 0) { 
            tft.drawString("% to low   ", 130, 100, 4);
          } else tft.drawString("% to High",  130, 100, 4);
-         if(drug){
-           mover = map(diff, 1,100, 1, 180);
-           digitalWrite(32, LOW);
-         }else {
+         if(drug == 1){
            mover = map(diff, 1,100, 180, 1);
+           digitalWrite(33, LOW);
            digitalWrite(32, HIGH);
+         }else {
+           mover = map(diff, 1,100, 1, 180);
+           //mover = 180;
+           digitalWrite(33, HIGH);
+           digitalWrite(32, LOW);
           
          }
          servo1.write(mover);
-           
+         delay(500);
+         //servo1.detach();  
 }
 void restarter(){
       Serial.println("Restarting in 10 seconds");
